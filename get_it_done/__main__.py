@@ -1,4 +1,4 @@
-from get_it_done import __app_name__, cli, __main__
+from get_it_done import __app_name__, __main__, cli
 
 
 def main():
