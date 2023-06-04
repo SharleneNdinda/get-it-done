@@ -33,6 +33,60 @@ def init(
         raise typer.Exit(1)
     else:
         typer.secho(f"database is {db_path}", fg=typer.colors.GREEN)
+
+@app.command()
+def add(
+    description: List[str] = typer.Argument(...),
+    priority: int = typer.Option(2, "--priority", "-p", min=1, max=3),
+) -> None:
+    """Add a new to-do with a description."""
+    todoer = get_todoer()
+    todo, error = todoer.add(description, priority)
+    if error:
+        typer.secho(
+            f'Adding to-do failed with"{ERRORS[error]}"', fg=typer.colors.RED
+        )
+        raise typer.Exit(1)
+    else:
+        typer.secho(
+            f"""to-do: "{todo['Description']}" was added """
+            f"""with priority: {priority}""",
+            fg=typer.colors.GREEN
+        )
+
+@app.command(name="list")
+def list_items() -> None:
+    """List all items in db."""
+    todoer = get_todoer()
+    todo_list = todoer.get_todo_list()
+    if len(todo_list) == 0:
+        typer.secho(
+            'No items found',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit()
+    typer.secho("\nto-do list:\n",
+                fg=typer.colors.BLUE, bold=True)
+    columns = (
+        "ID. ",
+        "| Priority ",
+        "| Done ",
+        "| Description ",
+    )
+    headers = "".join(columns)
+    typer.secho(headers, fg=typer.colors.GREEN, bold=True)
+    typer.secho("-" * len(headers), fg=typer.colors.GREEN)
+    for id, todo in enumerate(todo_list, 1):
+        desc, priority, done = todo.values()
+        typer.secho(
+            f"{id}{(len(columns[0]) - len(str(id))) * ' '}"
+            f"| ({priority}){(len(columns[1]) - len(str(priority)) - 4) * ' '}"
+            f"| {done}{(len(columns[2]) - len(str(done)) - 2) * ' '}"
+            f"| {desc}",
+            fg=typer.colors.GREEN,
+        )
+        typer.secho("-" * len(headers) + "\n", fg=typer.colors.GREEN)
+
         
 def _version_callback(value: bool) -> None:
     """Shows app version."""

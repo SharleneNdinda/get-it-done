@@ -18,7 +18,7 @@ runner = CliRunner()
 @pytest.fixture
 def mock_json_file(tmp_path):
     todo = [{
-        "Description": "Get milk", 
+        "Description": "Get milk",
         "Priority": 2,
         "Done": False
     }]
